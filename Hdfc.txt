@@ -1,0 +1,8 @@
+create new folder in HDFS
+
+adding comments.csv to hdfs
+hadoop fs -mkdir bdp/ytc_csv_hv
+hdfs dfs -chmod g+w /ytdatahdfs 
+dfs -put comment.csv /ytdata
+
+CREATE TABLE ytdata (videoId STRING, textDisplay STRING, textOriginal STRING,parentId STRING, authorDisplayName STRING, authorProfileImageUrl STRING, authorChannelUrl STRING, authorChannelId STRING, canRate BOOLEAN, viewerRating STRING,likeCount INT, publishedAt TIMESTAMP,updatedAt TIMESTAMP, commentId STRING) row format delimited fields terminated by ',' lines terminated by '\n' tblproperties ('skip.header.line.count'='1');
