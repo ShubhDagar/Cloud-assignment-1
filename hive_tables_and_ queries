@@ -1,0 +1,48 @@
+1. change properties of Hive to use ACID transactions
+
+      set hive.support.concurrency = true;
+      set hive.txn.manager = org.apache.hadoop.hive.ql.lockmgr.DbTxnManager;
+
+2. Creating table in Hive
+
+      CREATE TABLE dataset (videoId STRING, textDisplay STRING, textOriginal STRING,parentId STRING, authorDisplayName STRING, authorProfileImageUrl STRING, authorChannelUrl STRING, authorChannelId STRING, canRate BOOLEAN, viewerRating STRING,likeCount INT, publishedAt TIMESTAMP,updatedAt TIMESTAMP, commentId STRING)
+
+      insert into table dataset select * from ytdata;
+
+3. Add Spam label column to dataset and set default value as 0
+
+      alter table dataset add columns (label int);
+      update dataset set label=0;
+
+
+4. update label values in dataset 
+
+      UPDATE dataset SET LABEL = 1 WHERE LOWER(textDisplay) RLIKE 'call now' OR LOWER(textDisplay) RLIKE 'click here' OR LOWER(textDisplay) RLIKE 'click' OR LOWER(textDisplay) RLIKE 'cash' OR LOWER(textDisplay) RLIKE 'bonus' OR LOWER(textDisplay) RLIKE 'credit card' OR LOWER(textDisplay) RLIKE 'free trial' OR LOWER(textDisplay) RLIKE 'no fees' OR LOWER(textDisplay) RLIKE 'money back' OR LOWER(textDisplay) RLIKE 'urgent' OR LOWER(textDisplay) RLIKE 'lottery' OR LOWER(textDisplay) RLIKE 'winner' OR LOWER(textDisplay) RLIKE 'collect reward' OR LOWER(textDisplay) RLIKE 'card accepted' OR LOWER(textDisplay) RLIKE 'no hidden cost' OR LOWER(textDisplay) RLIKE 'winner' OR LOWER(textDisplay) RLIKE 'lose weight' OR LOWER(textDisplay) RLIKE 'apply now' OR LOWER(textDisplay) RLIKE 'act now' OR LOWER(textDisplay) RLIKE 'action required' OR LOWER(textDisplay) RLIKE 'card accepted' OR LOWER(textDisplay) RLIKE 'no extra cost' OR LOWER(textDisplay) RLIKE 'congratulations' OR LOWER(textDisplay) RLIKE 'no refunds' OR LOWER(textDisplay) RLIKE 'reward' OR LOWER(textDisplay) RLIKE 'cash prize'OR LOWER(textDisplay) RLIKE 'million' OR LOWER(textDisplay) RLIKE 'Congratulations' OR LOWER(textDisplay) RLIKE 'won' OR LOWER(textDisplay) RLIKE ' profitable' OR LOWER(textDisplay) RLIKE ' WhatsApp';
+
+
+5. create spam table and transfer data from dataset to this table
+
+      create table spam_yt (videoId STRING, textDisplay STRING, textOriginal STRING,parentId STRING, authorDisplayName STRING, authorProfileImageUrl STRING, authorChannelUrl STRING, authorChannelId STRING, canRate BOOLEAN, viewerRating STRING,likeCount INT, publishedAt TIMESTAMP, updatedAt TIMESTAMP, commentId STRING)
+      clustered by (videoId) into 4 buckets
+      tblproperties ('transactional'='true');
+
+      insert into table spam_yt select videoid, textdisplay, textoriginal, parentid, authordisplayname, authorprofileimageurl, authorchannelurl, authorchannelid, canrate, viewerrating, likecount, publishedat, updatedat, commentid from dataset where label=1;
+
+
+6. create ham table nd transfer data from dataset to this table
+
+      create table ham_yt (videoId STRING, textDisplay STRING, textOriginal STRING,parentId STRING, authorDisplayName STRING, authorProfileImageUrl STRING, authorChannelUrl STRING, authorChannelId STRING, canRate BOOLEAN, viewerRating STRING,likeCount INT, publishedAt TIMESTAMP, updatedAt TIMESTAMP, commentId STRING)
+      clustered by (videoId) into 4 buckets
+      stored as orc
+      tblproperties ('transactional'='true');
+
+      insert into table ham_yt select videoid, textdisplay, textoriginal, parentid, authordisplayname, authorprofileimageurl, authorchannelurl, authorchannelid, canrate, viewerrating, likecount, publishedat, updatedat, commentid from dataset where label=1;
+
+
+7. top 10 spam account
+
+      select authorchannelid, count(authorchannelid) as counter from spam_yt group by authorchannelid order by counter desc limit 10;
+
+8. top 10 ham account
+
+      select authorchannelid, count(authorchannelid) as counter from ham_yt group by authorchannelid order by counter desc limit 10;
