@@ -1,0 +1,15 @@
+Words to set label at 1 for spam
+
+UPDATE dataset SET LABEL = 1
+WHERE LOWER(textDisplay) RLIKE 'call now' OR LOWER(textDisplay) RLIKE 'click here' OR LOWER(textDisplay) RLIKE 'click' OR LOWER(textDisplay) RLIKE 'cash' OR LOWER(textDisplay) RLIKE 'bonus'
+OR LOWER(textDisplay) RLIKE 'credit card' OR LOWER(textDisplay) RLIKE 'free trial' 
+OR LOWER(textDisplay) RLIKE 'no fees' OR LOWER(textDisplay) RLIKE 'money back'
+OR LOWER(textDisplay) RLIKE 'urgent' OR LOWER(textDisplay) RLIKE 'lottery' OR LOWER(textDisplay) RLIKE 'winner'
+OR LOWER(textDisplay) RLIKE 'collect reward' OR LOWER(textDisplay) RLIKE 'card accepted'
+OR LOWER(textDisplay) RLIKE 'no hidden cost' OR LOWER(textDisplay) RLIKE 'winner'
+OR LOWER(textDisplay) RLIKE 'lose weight' OR LOWER(textDisplay) RLIKE 'apply now'
+OR LOWER(textDisplay) RLIKE 'act now' OR LOWER(textDisplay) RLIKE 'action required'
+OR LOWER(textDisplay) RLIKE 'card accepted' OR LOWER(textDisplay) RLIKE 'no extra cost'
+OR LOWER(textDisplay) RLIKE 'congratulations' OR LOWER(textDisplay) RLIKE 'no refunds'
+OR LOWER(textDisplay) RLIKE 'reward' OR LOWER(textDisplay) RLIKE 'cash prize'
+OR LOWER(textDisplay) RLIKE 'million OR LOWER(textDisplay) RLIKE 'Congratulations'
