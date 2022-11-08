@@ -1,0 +1,6 @@
+Queries to clean the dataset
+
+delete from dataset where parentId='';
+delete from dataset where parentId is Null;
+delete from dataset where textOriginal is Null;
+delete from dataset where textOriginal=' ';
